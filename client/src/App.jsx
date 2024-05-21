@@ -6,5 +6,6 @@ export default function App() {
     <ChakraProvider>
       <div>App</div>
     </ChakraProvider>
+    <helloworld></helloworld>
   );
 }
