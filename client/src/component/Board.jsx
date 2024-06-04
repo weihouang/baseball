@@ -49,8 +49,8 @@ const BaseballTacticalBoard = () => {
         position="absolute"
         left={position.x}
         top={position.y}
-        width="50px"
-        height="50px"
+        width="3em"
+        height="3em"
         backgroundColor="blue.500"
         onPointerDown={handlePointerDown}
         cursor={isDragging ? "grabbing" : "grab"}
