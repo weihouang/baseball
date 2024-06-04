@@ -1,131 +1,27 @@
 // BaseballField.jsx
 import React from "react";
-import { Box, Text, Flex } from "@chakra-ui/react";
+import { ChakraProvider, Box, Text, Flex , Image, Center,Button} from "@chakra-ui/react";
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
+import { Stage, Layer, Line } from 'react-konva';
+import BaseballTacticalBoard from "./Board";
+
+
+
 
 const BaseballField = () => {
-  return (
-    <Box
-      position="relative"
-      width="500px"
-      height="500px"
-      bg="green.700"
-      borderRadius="lg"
-      boxShadow="lg"
-    >
-      {/* Infield Diamond */}
-      <Box
-        position="absolute"
-        top="50%"
-        left="50%"
-        width="300px"
-        height="300px"
-        transform="translate(-50%, -50%) rotate(45deg)"
-        bgGradient="linear(to-br, brown.500, brown.700)"
-        borderRadius="md"
-        boxShadow="md"
-      >
-        {/* Bases */}
-        <Box
-          position="absolute"
-          top="0"
-          left="50%"
-          transform="translate(-50%, -50%)"
-          width="30px"
-          height="30px"
-          bg="white"
-          borderRadius="md"
+
+return (
+  <Center height="100vh">  
+    <Box>
+        <Image
+          src="https://media.istockphoto.com/id/1269757192/vector/baseball-field-icon-flat-illustration-of-baseball-field-vector-design-top-view-web.jpg?s=612x612&w=0&k=20&c=BrRqVmTOMJHjl5erh28rNM40U5e_IbX5UNGaZtVrfo4="
+          alt="Description of image"
+          boxSize="1500px"
+          objectFit="contain"
         />
-        <Box
-          position="absolute"
-          top="50%"
-          left="100%"
-          transform="translate(-50%, -50%)"
-          width="30px"
-          height="30px"
-          bg="white"
-          borderRadius="md"
-        />
-        <Box
-          position="absolute"
-          top="100%"
-          left="50%"
-          transform="translate(-50%, -50%)"
-          width="30px"
-          height="30px"
-          bg="white"
-          borderRadius="md"
-        />
-        <Box
-          position="absolute"
-          top="50%"
-          left="0"
-          transform="translate(-50%, -50%)"
-          width="30px"
-          height="30px"
-          bg="white"
-          borderRadius="md"
-        />
+        <BaseballTacticalBoard></BaseballTacticalBoard>
       </Box>
-
-      {/* Pitcher's Mound */}
-      <Box
-        position="absolute"
-        top="50%"
-        left="50%"
-        width="40px"
-        height="40px"
-        transform="translate(-50%, -50%)"
-        bg="brown.600"
-        borderRadius="50%"
-        boxShadow="md"
-      />
-
-      {/* Outfield Labels */}
-      <Flex
-        position="absolute"
-        top="10%"
-        left="50%"
-        transform="translateX(-50%)"
-        justify="center"
-      >
-        <Text color="white" fontWeight="bold" fontSize="lg">
-          Center Field
-        </Text>
-      </Flex>
-      <Flex
-        position="absolute"
-        bottom="10%"
-        left="50%"
-        transform="translateX(-50%)"
-        justify="center"
-      >
-        <Text color="white" fontWeight="bold" fontSize="lg">
-          Home Plate
-        </Text>
-      </Flex>
-      <Flex
-        position="absolute"
-        top="50%"
-        left="10%"
-        transform="translateY(-50%)"
-        justify="center"
-      >
-        <Text color="white" fontWeight="bold" fontSize="lg">
-          Left Field
-        </Text>
-      </Flex>
-      <Flex
-        position="absolute"
-        top="50%"
-        right="10%"
-        transform="translateY(-50%)"
-        justify="center"
-      >
-        <Text color="white" fontWeight="bold" fontSize="lg">
-          Right Field
-        </Text>
-      </Flex>
-    </Box>
+    </Center>  
   );
 };
 

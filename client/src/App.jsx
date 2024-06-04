@@ -12,6 +12,6 @@ export default function App() {
         <Route path="/field" element={<BaseballField></BaseballField>} />
       </Routes>
     </ChakraProvider>
-    <helloworld></helloworld>
+
   );
 }
