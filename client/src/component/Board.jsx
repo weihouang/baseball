@@ -23,6 +23,7 @@ const BaseballTacticalBoard = () => {
       x: e.clientX - position.x,
       y: e.clientY - position.y,
     });
+    e.preventDefault(); // Prevent text selection or other default actions
   };
 
   const handleMouseMove = (e) => {
@@ -31,6 +32,7 @@ const BaseballTacticalBoard = () => {
         x: e.clientX - offset.x,
         y: e.clientY - offset.y,
       });
+      e.preventDefault(); // Prevent default actions
     }
   };
 
@@ -39,19 +41,21 @@ const BaseballTacticalBoard = () => {
   };
 
   useEffect(() => {
-    if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
-    } else {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
-    }
+    const handleMouseUpGlobal = () => {
+      if (isDragging) {
+        setIsDragging(false);
+      }
+    };
+
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUpGlobal);
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUpGlobal);
     };
   }, [isDragging]);
+
   return (
     <ChakraProvider>
       <Box
