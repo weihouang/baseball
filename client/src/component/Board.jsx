@@ -1,23 +1,13 @@
 import React from "react";
 import { useState, useEffect } from "react";
-import {
-  ChakraProvider,
-  Box,
-  Text,
-  Flex,
-  Image,
-  Center,
-  Button,
-} from "@chakra-ui/react";
-import { Stage, Layer, Line } from "react-konva";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import { ChakraProvider, Box } from "@chakra-ui/react";
 
 const BaseballTacticalBoard = () => {
   const [position, setPosition] = useState({ x: 100, y: 100 });
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
-  const handleMouseDown = (e) => {
+  const handlePointerDown = (e) => {
     setIsDragging(true);
     setOffset({
       x: e.clientX - position.x,
@@ -25,7 +15,7 @@ const BaseballTacticalBoard = () => {
     });
   };
 
-  const handleMouseMove = (e) => {
+  const handlePointerMove = (e) => {
     if (isDragging) {
       setPosition({
         x: e.clientX - offset.x,
@@ -34,24 +24,25 @@ const BaseballTacticalBoard = () => {
     }
   };
 
-  const handleMouseUp = () => {
+  const handlePointerUp = () => {
     setIsDragging(false);
   };
 
   useEffect(() => {
     if (isDragging) {
-      window.addEventListener("mousemove", handleMouseMove);
-      window.addEventListener("mouseup", handleMouseUp);
+      window.addEventListener("pointermove", handlePointerMove);
+      window.addEventListener("pointerup", handlePointerUp);
     } else {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
     }
 
     return () => {
-      window.removeEventListener("mousemove", handleMouseMove);
-      window.removeEventListener("mouseup", handleMouseUp);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerup", handlePointerUp);
     };
   }, [isDragging]);
+
   return (
     <ChakraProvider>
       <Box
@@ -61,10 +52,7 @@ const BaseballTacticalBoard = () => {
         width="50px"
         height="50px"
         backgroundColor="blue.500"
-        onMouseDown={handleMouseDown}
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onPointerDown={handlePointerDown}
         cursor={isDragging ? "grabbing" : "grab"}
         userSelect="none"
         webkitUserSelect="none"
@@ -74,4 +62,5 @@ const BaseballTacticalBoard = () => {
     </ChakraProvider>
   );
 };
+
 export default BaseballTacticalBoard;
