@@ -5,7 +5,8 @@ from database import get_db, close_db
 
 
 app = Flask(__name__)
-CORS(app)  
+CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})  # Allow requests from your React app's origin
+
 
 collection = get_db()
 

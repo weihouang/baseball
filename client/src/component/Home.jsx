@@ -8,6 +8,14 @@ export default function Home() {
   const handleField = () => {
     navigate("/field");
   };
+  const handleRecord = () => {
+    navigate("/record");
+  };
 
-  return <Button onClick={handleField}>field</Button>;
+  return (
+    <Box>
+      <Button onClick={handleField}>field</Button>
+      <Button onClick={handleRecord}>Record</Button>
+    </Box>
+  );
 }
