@@ -1,8 +1,15 @@
-import React, { useState, useEffect } from 'react';
-import { ChakraProvider, Box, CSSReset, Text, Table, Thead, Tbody, Tr, Th, Td } from '@chakra-ui/react';
+import React, { useState, useEffect } from "react";
+import {
+  ChakraProvider,
+  Box,
+  CSSReset,
+  Text,
+  Button,
+  Select,
+} from "@chakra-ui/react";
+import { useNavigate } from "react-router-dom";
 
-const DraggablePlayer = ({ id, initialPosition, color, label, updatePosition }) => {
-  const [position, setPosition] = useState(initialPosition);
+const DraggablePlayer = ({ id, position, color, label, updatePosition }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
@@ -21,7 +28,6 @@ const DraggablePlayer = ({ id, initialPosition, color, label, updatePosition }) 
         x: e.clientX - offset.x,
         y: e.clientY - offset.y,
       };
-      setPosition(newPosition);
       updatePosition(id, newPosition);
       e.preventDefault(); // Prevent default actions
     }
@@ -38,12 +44,12 @@ const DraggablePlayer = ({ id, initialPosition, color, label, updatePosition }) 
       }
     };
 
-    document.addEventListener('mousemove', handleMouseMove);
-    document.addEventListener('mouseup', handleMouseUpGlobal);
+    document.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener("mouseup", handleMouseUpGlobal);
 
     return () => {
-      document.removeEventListener('mousemove', handleMouseMove);
-      document.removeEventListener('mouseup', handleMouseUpGlobal);
+      document.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener("mouseup", handleMouseUpGlobal);
     };
   }, [isDragging]);
 
@@ -60,18 +66,21 @@ const DraggablePlayer = ({ id, initialPosition, color, label, updatePosition }) 
       alignItems="center"
       justifyContent="center"
       onMouseDown={handleMouseDown}
-      cursor={isDragging ? 'grabbing' : 'grab'}
+      cursor={isDragging ? "grabbing" : "grab"}
       userSelect="none"
       webkitUserSelect="none"
       mozUserSelect="none"
       msUserSelect="none"
     >
-      <Text color="white" fontWeight="bold">{label}</Text>
+      <Text color="white" fontWeight="bold">
+        {label}
+      </Text>
     </Box>
   );
 };
 
 const App = () => {
+  const navigate = useNavigate();
   const initialPositions = [
     { x: 100, y: 100 },
     { x: 200, y: 100 },
@@ -94,19 +103,23 @@ const App = () => {
     { color: "red.700", label: "R2" },
     { color: "red.700", label: "R3" },
     { color: "red.700", label: "R4" },
-    { color: "blue.500", label: "P" },  // Pitcher
-    { color: "blue.500", label: "C" },  // Catcher
-    { color: "blue.500", label: "1B" }, // First Base
-    { color: "blue.500", label: "2B" }, // Second Base
-    { color: "blue.500", label: "3B" }, // Third Base
-    { color: "blue.500", label: "SS" }, // Shortstop
-    { color: "blue.500", label: "LF" }, // Left Field
-    { color: "blue.500", label: "CF" }, // Center Field
-    { color: "blue.500", label: "RF" }, // Right Field
-    { color: "blue.500", label: "DH" }, // Designated Hitter
+    { color: "blue.500", label: "P" },
+    { color: "blue.500", label: "C" },
+    { color: "blue.500", label: "1B" },
+    { color: "blue.500", label: "2B" },
+    { color: "blue.500", label: "3B" },
+    { color: "blue.500", label: "SS" },
+    { color: "blue.500", label: "LF" },
+    { color: "blue.500", label: "CF" },
+    { color: "blue.500", label: "RF" },
+    { color: "blue.500", label: "DH" },
   ];
 
   const [positions, setPositions] = useState(initialPositions);
+  const [records, setRecords] = useState(() => {
+    const savedRecords = localStorage.getItem("records");
+    return savedRecords ? JSON.parse(savedRecords) : [];
+  });
 
   const updatePosition = (id, newPosition) => {
     const updatedPositions = positions.map((pos, index) =>
@@ -115,39 +128,60 @@ const App = () => {
     setPositions(updatedPositions);
   };
 
+  const handleTable = () => {
+    navigate("/table");
+  };
+
+  const recordPositions = () => {
+    const recordName = prompt("Enter a name for this record:");
+    if (recordName) {
+      const newRecords = [...records, { name: recordName, positions }];
+      setRecords(newRecords);
+      localStorage.setItem("records", JSON.stringify(newRecords));
+    }
+  };
+
+  const clearRecords = () => {
+    setRecords([]);
+    localStorage.removeItem("records");
+  };
+
+  const handleSelectRecord = (event) => {
+    const recordIndex = parseInt(event.target.value, 10);
+    if (recordIndex >= 0 && recordIndex < records.length) {
+      setPositions(records[recordIndex].positions);
+    }
+  };
+
   return (
     <ChakraProvider>
       <CSSReset />
-      {initialPositions.map((position, index) => (
-        <DraggablePlayer 
-          key={index} 
-          id={index} 
-          initialPosition={position} 
-          color={players[index].color} 
-          label={players[index].label} 
-          updatePosition={updatePosition} 
+      <Box position="absolute" top="10px" left="10px" display="flex" gap="10px">
+        <Button colorScheme="teal" onClick={recordPositions}>
+          Record
+        </Button>
+        <Button colorScheme="red" onClick={clearRecords}>
+          Clear
+        </Button>
+        <Button onClick={handleTable}>Table</Button>
+        <Select placeholder="Select record" onChange={handleSelectRecord}>
+          {records.map((record, index) => (
+            <option key={index} value={index}>
+              {record.name}
+            </option>
+          ))}
+        </Select>
+      </Box>
+      {positions.map((position, index) => (
+        <DraggablePlayer
+          key={index}
+          id={index}
+          position={position}
+          color={players[index].color}
+          label={players[index].label}
+          updatePosition={updatePosition}
         />
       ))}
-      <Box position="absolute" top="500px" left="50px">
-        <Table variant="simple">
-          <Thead>
-            <Tr>
-              <Th>Player</Th>
-              <Th>X</Th>
-              <Th>Y</Th>
-            </Tr>
-          </Thead>
-          <Tbody>
-            {positions.map((pos, index) => (
-              <Tr key={index}>
-                <Td>{players[index].label}</Td>
-                <Td>{pos.x}</Td>
-                <Td>{pos.y}</Td>
-              </Tr>
-            ))}
-          </Tbody>
-        </Table>
-      </Box>
     </ChakraProvider>
   );
 };
