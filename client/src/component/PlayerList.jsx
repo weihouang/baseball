@@ -1,15 +1,18 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import {
   ChakraProvider,
   Box,
   CSSReset,
   Button,
   Select,
+  VStack,
+  HStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import DraggablePlayer from "./component/Player"; // Adjust the path if necessary
+import DraggablePlayer from "./Player";
+import { motion } from "framer-motion";
 
-const App = () => {
+const PlayerList = () => {
   const navigate = useNavigate();
   const initialPositions = [
     { x: 100, y: 100 },
@@ -46,6 +49,7 @@ const App = () => {
   ];
 
   const [positions, setPositions] = useState(initialPositions);
+  const [initialPositionsState, setInitialPositionsState] = useState(null);
   const [records, setRecords] = useState(() => {
     const savedRecords = localStorage.getItem("records");
     return savedRecords ? JSON.parse(savedRecords) : [];
@@ -83,24 +87,86 @@ const App = () => {
     }
   };
 
+  const [isListVisible, setIsListVisible] = useState(false);
+
+  const toggleListVisibility = () => {
+    setIsListVisible(!isListVisible);
+  };
+
+  const handleRemoveRecord = (index) => {
+    const updatedRecords = records.filter((_, i) => i !== index);
+    setRecords(updatedRecords);
+    localStorage.setItem("records", JSON.stringify(updatedRecords));
+  };
+
+  const handleStart = () => {
+    setInitialPositionsState([...positions]);
+  };
+
+  const handlePlay = () => {
+    if (initialPositionsState) {
+      initialPositionsState.forEach((initialPos, index) => {
+        updatePosition(index, initialPos);
+      });
+
+      setTimeout(() => {
+        records[records.length - 1].positions.forEach((finalPos, index) => {
+          updatePosition(index, finalPos);
+        });
+      }, 1000); // Animate for 1 second
+    }
+  };
+
   return (
     <ChakraProvider>
       <CSSReset />
       <Box position="absolute" top="10px" left="10px" display="flex" gap="10px">
+        <Button colorScheme="teal" onClick={handleStart}>
+          Start
+        </Button>
         <Button colorScheme="teal" onClick={recordPositions}>
           Record
+        </Button>
+        <Button colorScheme="teal" onClick={handlePlay}>
+          Play
         </Button>
         <Button colorScheme="red" onClick={clearRecords}>
           Clear
         </Button>
         <Button onClick={handleTable}>Table</Button>
-        <Select placeholder="Select record" onChange={handleSelectRecord}>
-          {records.map((record, index) => (
-            <option key={index} value={index}>
-              {record.name}
-            </option>
-          ))}
-        </Select>
+        <Box>
+          <Button mt={2} onClick={toggleListVisibility}>
+            {isListVisible ? "Hide List" : "Show List"}
+          </Button>
+          {isListVisible && (
+            <VStack
+              spacing={2}
+              overflowY={"auto"}
+              maxH={"10em"}
+              position={"relative"}
+              zIndex={1000}
+              bg={"white"}
+              p={"1em"}
+              borderRadius={"1em"}
+              border={"1px"}
+            >
+              {records.map((record, index) => (
+                <Box key={index}>
+                  <Button onClick={() => handleButtonClick(index)}>
+                    {record.name}
+                  </Button>
+                  <Button
+                    onClick={() => handleRemoveRecord(index)}
+                    colorScheme="red"
+                    ml={2}
+                  >
+                    Remove
+                  </Button>
+                </Box>
+              ))}
+            </VStack>
+          )}
+        </Box>
       </Box>
       {positions.map((position, index) => (
         <DraggablePlayer
@@ -116,4 +182,5 @@ const App = () => {
   );
 };
 
-export default App;
+export default PlayerList;
+

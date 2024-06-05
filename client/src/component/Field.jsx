@@ -1,6 +1,6 @@
 import React from "react";
 import { ChakraProvider, Box, Center, Image } from "@chakra-ui/react";
-import App from "./Player";
+import PlayerList from "./PlayerList.jsx";
 
 const BaseballField = () => {
   return (
@@ -15,7 +15,7 @@ const BaseballField = () => {
           style={{ pointerEvents: "none", userSelect: "none" }}
         />
         
-        <App/>
+        <PlayerList/>
       </Box>
     </Center>
         
