@@ -35,7 +35,7 @@ const TablePage = () => {
         </Thead>
         <Tbody>
           {records.map((record, recordIndex) =>
-            record.map((pos, playerIndex) => (
+            record.positions.map((pos, playerIndex) => (
               <Tr key={`${recordIndex}-${playerIndex}`}>
                 <Td>{recordIndex + 1}</Td>
                 <Td>{playerIndex}</Td>
