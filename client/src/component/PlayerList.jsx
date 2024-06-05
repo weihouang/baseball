@@ -10,7 +10,6 @@ import {
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import DraggablePlayer from "./Player";
-import { motion } from "framer-motion";
 
 const PlayerList = () => {
   const navigate = useNavigate();
@@ -49,7 +48,8 @@ const PlayerList = () => {
   ];
 
   const [positions, setPositions] = useState(initialPositions);
-  const [initialPositionsState, setInitialPositionsState] = useState(null);
+  const [initial, setInitial] = useState(null);
+  const [currentIndex, setCurrentIndex] = useState(-1);
   const [records, setRecords] = useState(() => {
     const savedRecords = localStorage.getItem("records");
     return savedRecords ? JSON.parse(savedRecords) : [];
@@ -62,36 +62,26 @@ const PlayerList = () => {
     setPositions(updatedPositions);
   };
 
-  const handleTable = () => {
-    navigate("/table");
-  };
-
   const recordPositions = () => {
     const recordName = prompt("Enter a name for this record:");
     if (recordName) {
-      const newRecords = [...records, { name: recordName, positions }];
+      const newRecords = [
+        ...records,
+        {
+          name: recordName,
+          initial: [...initial],
+          positions,
+        },
+      ];
       setRecords(newRecords);
       localStorage.setItem("records", JSON.stringify(newRecords));
     }
   };
-
   const clearRecords = () => {
-    setRecords([]);
-    localStorage.removeItem("records");
-  };
-
-  const handleSelectRecord = (event) => {
-    const recordIndex = parseInt(event.target.value, 10);
-    if (recordIndex >= 0 && recordIndex < records.length) {
-      setPositions(records[recordIndex].positions);
-    }
+    setPositions(initialPositions);
   };
 
   const [isListVisible, setIsListVisible] = useState(false);
-
-  const toggleListVisibility = () => {
-    setIsListVisible(!isListVisible);
-  };
 
   const handleRemoveRecord = (index) => {
     const updatedRecords = records.filter((_, i) => i !== index);
@@ -100,23 +90,25 @@ const PlayerList = () => {
   };
 
   const handleStart = () => {
-    setInitialPositionsState([...positions]);
+    setInitial([...positions]);
   };
 
   const handlePlay = () => {
-    if (initialPositionsState) {
-      initialPositionsState.forEach((initialPos, index) => {
-        updatePosition(index, initialPos);
-      });
-
+    if (records[currentIndex]) {
+      setPositions(records[currentIndex].initial);
       setTimeout(() => {
-        records[records.length - 1].positions.forEach((finalPos, index) => {
-          updatePosition(index, finalPos);
-        });
+        setPositions(records[currentIndex].positions);
       }, 1000); // Animate for 1 second
     }
   };
 
+  const handleButtonClick = (index) => {
+    const recordIndex = index;
+    if (recordIndex >= 0 && recordIndex < records.length) {
+      setPositions(records[recordIndex].initial);
+    }
+    setCurrentIndex(index);
+  };
   return (
     <ChakraProvider>
       <CSSReset />
@@ -133,9 +125,9 @@ const PlayerList = () => {
         <Button colorScheme="red" onClick={clearRecords}>
           Clear
         </Button>
-        <Button onClick={handleTable}>Table</Button>
+        <Button onClick={() => navigate("/table")}>Table</Button>
         <Box>
-          <Button mt={2} onClick={toggleListVisibility}>
+          <Button onClick={() => setIsListVisible(!isListVisible)}>
             {isListVisible ? "Hide List" : "Show List"}
           </Button>
           {isListVisible && (
@@ -183,4 +175,3 @@ const PlayerList = () => {
 };
 
 export default PlayerList;
-

@@ -11,7 +11,7 @@ const TablePage = () => {
   const navigate = useNavigate();
 
   const handleField = () => {
-    navigate("/");
+    navigate("/field");
   };
 
   useEffect(() => {
