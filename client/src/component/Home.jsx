@@ -16,6 +16,7 @@ export default function Home() {
     <Box>
       <Button onClick={handleField}>field</Button>
       <Button onClick={handleRecord}>Record</Button>
+      <Button onClick={() => navigate("/testing")}>testing</Button>
     </Box>
   );
 }

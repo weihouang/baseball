@@ -87,6 +87,7 @@ const PlayerList = () => {
     const updatedRecords = records.filter((_, i) => i !== index);
     setRecords(updatedRecords);
     localStorage.setItem("records", JSON.stringify(updatedRecords));
+    setCurrentIndex(-1);
   };
 
   const handleStart = () => {
@@ -119,9 +120,7 @@ const PlayerList = () => {
         <Button colorScheme="teal" onClick={recordPositions}>
           Record
         </Button>
-        <Button colorScheme="teal" onClick={handlePlay}>
-          Play
-        </Button>
+
         <Button colorScheme="red" onClick={clearRecords}>
           Clear
         </Button>
@@ -130,7 +129,7 @@ const PlayerList = () => {
           <Button onClick={() => setIsListVisible(!isListVisible)}>
             {isListVisible ? "Hide List" : "Show List"}
           </Button>
-          {isListVisible && (
+          {isListVisible && records.length > 0 && (
             <VStack
               spacing={2}
               overflowY={"auto"}
@@ -159,6 +158,11 @@ const PlayerList = () => {
             </VStack>
           )}
         </Box>
+        {currentIndex != -1 && (
+          <Button colorScheme="teal" onClick={handlePlay}>
+            Play
+          </Button>
+        )}
       </Box>
       {positions.map((position, index) => (
         <DraggablePlayer

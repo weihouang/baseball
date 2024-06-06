@@ -1,10 +1,10 @@
-import React from "react";
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { Box } from "@chakra-ui/react";
 import axios from "axios";
 
 export default function LoadRecord() {
   const [records, setRecords] = useState([]);
+
   useEffect(() => {
     const fetchRecords = async () => {
       try {
@@ -18,5 +18,5 @@ export default function LoadRecord() {
     fetchRecords();
   }, []);
 
-  return <Box>{records}</Box>;
+  return <Box>{JSON.stringify(records)}</Box>; // Display records for debugging
 }
