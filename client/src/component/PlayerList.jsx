@@ -1,15 +1,15 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import {
   ChakraProvider,
   Box,
+  Center, 
+  Image,
   CSSReset,
   Button,
-  Select,
   VStack,
-  HStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
-import DraggablePlayer from "./Player";
+import DraggablePlayer from "./DraggablePlayer";
 
 const PlayerList = () => {
   const navigate = useNavigate();
@@ -31,10 +31,10 @@ const PlayerList = () => {
   ];
 
   const players = [
-    { color: "red.700", label: "R1" },
-    { color: "red.700", label: "R2" },
-    { color: "red.700", label: "R3" },
-    { color: "red.700", label: "R4" },
+    { color: "red.700", label: "R1" }, // runner 1
+    { color: "red.700", label: "R2" }, // runner 2
+    { color: "red.700", label: "R3" }, // runner 3
+    { color: "red.700", label: "R4" }, // runner 4
     { color: "blue.500", label: "P" },
     { color: "blue.500", label: "C" },
     { color: "blue.500", label: "1B" },
@@ -44,7 +44,7 @@ const PlayerList = () => {
     { color: "blue.500", label: "LF" },
     { color: "blue.500", label: "CF" },
     { color: "blue.500", label: "RF" },
-    { color: "blue.500", label: "DH" }, // Designated Hitter
+    { color: "blue.500", label: "BB" }, // baseball
   ];
 
   const [positions, setPositions] = useState(initialPositions);
@@ -54,6 +54,7 @@ const PlayerList = () => {
     const savedRecords = localStorage.getItem("records");
     return savedRecords ? JSON.parse(savedRecords) : [];
   });
+  const [isPlaying, setIsPlaying] = useState(false);
 
   const updatePosition = (id, newPosition) => {
     const updatedPositions = positions.map((pos, index) =>
@@ -77,8 +78,10 @@ const PlayerList = () => {
       localStorage.setItem("records", JSON.stringify(newRecords));
     }
   };
+
   const clearRecords = () => {
     setPositions(initialPositions);
+    setIsPlaying(false);
   };
 
   const [isListVisible, setIsListVisible] = useState(false);
@@ -92,9 +95,11 @@ const PlayerList = () => {
 
   const handleStart = () => {
     setInitial([...positions]);
+    setIsPlaying(false);
   };
 
   const handlePlay = () => {
+    setIsPlaying(true);
     if (records[currentIndex]) {
       setPositions(records[currentIndex].initial);
       setTimeout(() => {
@@ -110,6 +115,7 @@ const PlayerList = () => {
     }
     setCurrentIndex(index);
   };
+
   return (
     <ChakraProvider>
       <CSSReset />
@@ -158,7 +164,7 @@ const PlayerList = () => {
             </VStack>
           )}
         </Box>
-        {currentIndex != -1 && (
+        {currentIndex !== -1 && (
           <Button colorScheme="teal" onClick={handlePlay}>
             Play
           </Button>
@@ -172,10 +178,12 @@ const PlayerList = () => {
           color={players[index].color}
           label={players[index].label}
           updatePosition={updatePosition}
+          isPlaying={isPlaying}
         />
       ))}
     </ChakraProvider>
-  );
+  
+);
 };
 
 export default PlayerList;
