@@ -6,10 +6,14 @@ client = MongoClient()
 def get_db():
     db_uri = MONGODB_URI
     client = MongoClient(db_uri)
-    db_name = db_uri.split('/')[-1]
-
-    print(client[db_name])
-    return client[db_name]
+    db = client['users'] 
+    collection = db['users']  
+    return collection
 
 def close_db(e=None):
     client.close()
+
+
+
+
+

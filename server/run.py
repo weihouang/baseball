@@ -1,32 +1,31 @@
 from flask import Flask, jsonify, request
+from pymongo import MongoClient
+from bson.json_util import dumps, ObjectId
+import os
 from flask_cors import CORS
 
-from database import get_db, close_db
-
-
 app = Flask(__name__)
-CORS(app, resources={r"/*": {"origins": "http://localhost:5173"}})  # Allow requests from your React app's origin
+CORS(app)
+# MongoDB configuration
+MONGODB_URI = "mongodb+srv://redditbot:7CUEuXcTahv60cc0@cluster0.qttwqgk.mongodb.net/users"
+client = MongoClient(MONGODB_URI)
+db = client.get_database()
 
-
-collection = get_db()
-
-@app.route('/records', methods=['GET'])
+@app.route('/api/records', methods=['GET'])
 def get_records():
-    records = list(collection.find({}))
-    for record in records:
-        record['_id'] = str(record['_id'])  # Convert ObjectId to string
-    return jsonify(records)
+    records = db.records.find()
+    return dumps(records), 200
 
-@app.route('/records', methods=['POST'])
+@app.route('/api/record', methods=['POST'])
 def add_record():
     data = request.json
-    result = collection.insert_one(data)
-    return jsonify({'status': 'Record added', 'id': str(result.inserted_id)})
+    db.records.insert_one(data)
+    return jsonify({'message': 'Record added successfully'}), 201
 
-@app.route('/records', methods=['DELETE'])
-def clear_records():
-    collection.delete_many({})
-    return jsonify({'status': 'All records cleared'})
+@app.route('/api/record/<id>', methods=['DELETE'])
+def delete_record(id):
+    db.records.delete_one({'_id': ObjectId(id)})
+    return jsonify({'message': 'Record deleted successfully'}), 200
 
 if __name__ == '__main__':
-    app.run(debug=False)
+    app.run(debug=True)

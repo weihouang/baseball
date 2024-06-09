@@ -6,6 +6,7 @@ import BaseballField from "./component/Field";
 import Table from "./component/Table";
 import LoadRecord from "./component/LoadRecord";
 import Testing from "./component/Testing";
+import Min from "./component/Min";
 
 export default function App() {
   return (
@@ -14,7 +15,7 @@ export default function App() {
         <Route path="/" element={<Home></Home>} />
         <Route path="/field" element={<BaseballField></BaseballField>} />
         <Route path="/table" element={<Table></Table>} />
-        <Route path="/record" element={<LoadRecord></LoadRecord>}></Route>
+        <Route path="/record" element={<Min></Min>}></Route>
         <Route path="/testing" element={<Testing></Testing>}></Route>
       </Routes>
     </ChakraProvider>
