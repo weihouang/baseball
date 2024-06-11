@@ -1,60 +1,80 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   ChakraProvider,
   Box,
-  Center, 
-  Image,
   CSSReset,
   Button,
   VStack,
 } from "@chakra-ui/react";
 import { useNavigate } from "react-router-dom";
 import DraggablePlayer from "./DraggablePlayer";
+import { useAuth0 } from "@auth0/auth0-react";
+import axios from "axios";
+import { initialPositions, players } from "./Data.js";
 
 const PlayerList = () => {
   const navigate = useNavigate();
-  const initialPositions = [
-    { x: 100, y: 100 },
-    { x: 200, y: 100 },
-    { x: 300, y: 100 },
-    { x: 400, y: 100 },
-    { x: 100, y: 200 },
-    { x: 200, y: 200 },
-    { x: 300, y: 200 },
-    { x: 400, y: 200 },
-    { x: 100, y: 300 },
-    { x: 200, y: 300 },
-    { x: 300, y: 300 },
-    { x: 400, y: 300 },
-    { x: 100, y: 400 },
-    { x: 200, y: 400 },
-  ];
 
-  const players = [
-    { color: "red.700", label: "R1" }, // runner 1
-    { color: "red.700", label: "R2" }, // runner 2
-    { color: "red.700", label: "R3" }, // runner 3
-    { color: "red.700", label: "R4" }, // runner 4
-    { color: "blue.500", label: "P" },
-    { color: "blue.500", label: "C" },
-    { color: "blue.500", label: "1B" },
-    { color: "blue.500", label: "2B" },
-    { color: "blue.500", label: "3B" },
-    { color: "blue.500", label: "SS" },
-    { color: "blue.500", label: "LF" },
-    { color: "blue.500", label: "CF" },
-    { color: "blue.500", label: "RF" },
-    { color: "blue.500", label: "BB" }, // baseball
-  ];
-
+  const { user, isAuthenticated, isLoading } = useAuth0();
   const [positions, setPositions] = useState(initialPositions);
   const [initial, setInitial] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(-1);
-  const [records, setRecords] = useState(() => {
-    const savedRecords = localStorage.getItem("records");
-    return savedRecords ? JSON.parse(savedRecords) : [];
-  });
+  const [isListVisible, setIsListVisible] = useState(false);
+  const [records, setRecords] = useState();
   const [isPlaying, setIsPlaying] = useState(false);
+
+  useEffect(() => {
+    if (!isLoading && user && user.email) {
+      fetchRecords();
+    }
+  }, [user, isLoading]);
+
+  const fetchRecords = async () => {
+    if (user && user.email) {
+      try {
+        const response = await axios.get("http://127.0.0.1:5000/api/records", {
+          params: { email: user.email },
+        });
+        setRecords(response.data);
+        console.log(records);
+      } catch (error) {
+        console.error("Error fetching records:", error);
+      }
+    }
+  };
+
+  const postRecord = async (name, positions) => {
+    if (user?.email) {
+      try {
+        const newRecord = {
+          email: user.email,
+          name: name,
+          position: positions,
+        };
+        const response = await axios.post(
+          "http://127.0.0.1:5000/api/record",
+          newRecord
+        );
+      } catch (error) {
+        console.error("Error posting record:", error);
+      }
+    }
+  };
+
+  const deleteRecord = async (id) => {
+    try {
+      const newid = id.$oid.toString();
+      await axios.delete(`http://127.0.0.1:5000/api/record/${newid}`);
+      setRecords(fetchRecords());
+      setCurrentIndex(-1);
+    } catch (error) {
+      console.error("Error deleting record:", error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("record", records);
+  }, [records]);
 
   const updatePosition = (id, newPosition) => {
     const updatedPositions = positions.map((pos, index) =>
@@ -66,31 +86,15 @@ const PlayerList = () => {
   const recordPositions = () => {
     const recordName = prompt("Enter a name for this record:");
     if (recordName) {
-      const newRecords = [
-        ...records,
-        {
-          name: recordName,
-          initial: [...initial],
-          positions,
-        },
-      ];
-      setRecords(newRecords);
-      localStorage.setItem("records", JSON.stringify(newRecords));
+      const position = { initial: [...initial], final: positions };
+      postRecord(recordName, position);
+      setRecords(fetchRecords());
     }
   };
 
   const clearRecords = () => {
     setPositions(initialPositions);
     setIsPlaying(false);
-  };
-
-  const [isListVisible, setIsListVisible] = useState(false);
-
-  const handleRemoveRecord = (index) => {
-    const updatedRecords = records.filter((_, i) => i !== index);
-    setRecords(updatedRecords);
-    localStorage.setItem("records", JSON.stringify(updatedRecords));
-    setCurrentIndex(-1);
   };
 
   const handleStart = () => {
@@ -101,9 +105,9 @@ const PlayerList = () => {
   const handlePlay = () => {
     setIsPlaying(true);
     if (records[currentIndex]) {
-      setPositions(records[currentIndex].initial);
+      setPositions(records[currentIndex].position.initial);
       setTimeout(() => {
-        setPositions(records[currentIndex].positions);
+        setPositions(records[currentIndex].position.final);
       }, 1000); // Animate for 1 second
     }
   };
@@ -111,7 +115,7 @@ const PlayerList = () => {
   const handleButtonClick = (index) => {
     const recordIndex = index;
     if (recordIndex >= 0 && recordIndex < records.length) {
-      setPositions(records[recordIndex].initial);
+      setPositions(records[recordIndex].position.initial);
     }
     setCurrentIndex(index);
   };
@@ -153,7 +157,7 @@ const PlayerList = () => {
                     {record.name}
                   </Button>
                   <Button
-                    onClick={() => handleRemoveRecord(index)}
+                    onClick={() => deleteRecord(record._id)}
                     colorScheme="red"
                     ml={2}
                   >
@@ -182,8 +186,7 @@ const PlayerList = () => {
         />
       ))}
     </ChakraProvider>
-  
-);
+  );
 };
 
 export default PlayerList;

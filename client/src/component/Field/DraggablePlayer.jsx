@@ -1,8 +1,15 @@
 import React, { useState, useEffect } from "react";
 import { Box, Image, Text } from "@chakra-ui/react";
-import baseballImage from "../assets/baseball.png"; // Adjust the path if necessary
+import baseballImage from "../../assets/baseball.png"; // Adjust the path if necessary
 
-const DraggablePlayer = ({ id, position, color, label, updatePosition, isPlaying }) => {
+const DraggablePlayer = ({
+  id,
+  position,
+  color,
+  label,
+  updatePosition,
+  isPlaying,
+}) => {
   const [isDragging, setIsDragging] = useState(false);
   const [offset, setOffset] = useState({ x: 0, y: 0 });
 
@@ -46,11 +53,20 @@ const DraggablePlayer = ({ id, position, color, label, updatePosition, isPlaying
 
         // Calculate the closest point on the border
         const leftDistance = Math.abs(newPosition.x - squareBoundaries.left);
-        const rightDistance = Math.abs(newPosition.x - (squareBoundaries.right - 50));
+        const rightDistance = Math.abs(
+          newPosition.x - (squareBoundaries.right - 50)
+        );
         const topDistance = Math.abs(newPosition.y - squareBoundaries.top);
-        const bottomDistance = Math.abs(newPosition.y - (squareBoundaries.bottom - 50));
+        const bottomDistance = Math.abs(
+          newPosition.y - (squareBoundaries.bottom - 50)
+        );
 
-        const minDistance = Math.min(leftDistance, rightDistance, topDistance, bottomDistance);
+        const minDistance = Math.min(
+          leftDistance,
+          rightDistance,
+          topDistance,
+          bottomDistance
+        );
 
         if (minDistance === leftDistance) {
           newPosition.x = squareBoundaries.left;
@@ -111,11 +127,7 @@ const DraggablePlayer = ({ id, position, color, label, updatePosition, isPlaying
       }}
     >
       {label === "DH" ? (
-        <Image
-          src={baseballImage}
-          alt="Baseball"
-          boxSize="30px"
-        />
+        <Image src={baseballImage} alt="Baseball" boxSize="30px" />
       ) : (
         <Text color="white" fontWeight="bold">
           {label}

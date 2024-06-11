@@ -16,17 +16,17 @@ const BaseballField = () => {
         />
         <PlayerList />
         <Box
-           width="14em"
-           height="14em"
-           border="2px solid black"
-           backgroundColor="transparent"
-           transform="rotate(45deg)"
-           display="flex"
-           justifyContent="center"
-           alignItems="center"
-           position="absolute" // or 'relative' depending on your layout
-           top="40em" // Adjust this value to move the square up or down
-           left="32em" // Adjust this value to move the square left or right
+          width="14em"
+          height="14em"
+          border="2px solid black"
+          backgroundColor="transparent"
+          transform="rotate(45deg)"
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          position="absolute" // or 'relative' depending on your layout
+          top="40em" // Adjust this value to move the square up or down
+          left="32em" // Adjust this value to move the square left or right
         />
         ;
       </Box>
