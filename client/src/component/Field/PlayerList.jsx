@@ -20,7 +20,7 @@ const PlayerList = () => {
   const [initial, setInitial] = useState(null);
   const [currentIndex, setCurrentIndex] = useState(-1);
   const [isListVisible, setIsListVisible] = useState(false);
-  const [records, setRecords] = useState();
+  const [records, setRecords] = useState([]);
   const [isPlaying, setIsPlaying] = useState(false);
 
   useEffect(() => {
@@ -36,7 +36,6 @@ const PlayerList = () => {
           params: { email: user.email },
         });
         setRecords(response.data);
-        console.log(records);
       } catch (error) {
         console.error("Error fetching records:", error);
       }
@@ -58,6 +57,9 @@ const PlayerList = () => {
       } catch (error) {
         console.error("Error posting record:", error);
       }
+      setRecords(fetchRecords());
+    } else {
+      postRecord(name, positions);
     }
   };
 
@@ -71,10 +73,6 @@ const PlayerList = () => {
       console.error("Error deleting record:", error);
     }
   };
-
-  useEffect(() => {
-    console.log("record", records);
-  }, [records]);
 
   const updatePosition = (id, newPosition) => {
     const updatedPositions = positions.map((pos, index) =>
